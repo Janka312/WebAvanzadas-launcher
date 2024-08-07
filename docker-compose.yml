@@ -37,7 +37,30 @@ services:
     volumes:
       - ./products-ms/postgres:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - 5433:5432
     environment:
       - POSTGRES_PASSWORD=MySecr3tPassWord@as2
       - POSTGRES_DB=TesloDB2
+
+  auth-ms:
+    depends_on:
+      - auth-db
+    build: ./auth-ms
+    volumes:
+      - ./auth-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3002
+      - NATS_SERVERS=nats://nats-server:4222
+
+  auth-db:
+    container_name: teslodb3
+    image: postgres:14.3
+    restart: always
+    volumes:
+      - ./auth-ms/postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=MySecr3tPassWord@as2
+      - POSTGRES_DB=TesloDB3
